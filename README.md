@@ -7,7 +7,7 @@ The goal is to track a diving whale in 3D underwater space using two sensor syst
 1. **Extended Kalman Filter (EKF)** for the Gaussian noise scenario
 2. **Bootstrap Particle Filter (PF)** for the non-Gaussian noise scenario
 
-> **Note:** The core filter algorithms in `estimator.py`, evaluation extensions in `run.py` and `run.sh`, as well as the documentation and plots are my own work. All other files (simulator, scoring harness, problem constants, and container environment) were provided by the course staff at ETH Zürich (IDSC). Shared for educational purposes with the teaching assistants' approval.
+> **Note:** This repository contains only my own work: the estimator implementations and the documentation. The plots were generated with the course-provided plotting scripts from my own simulation runs. The course framework (simulator, scoring, constants, Docker environment) was provided by the course staff at ETH Zürich (IDSC) and is **not** included.
 
 ## Problem Setup
 
@@ -42,7 +42,7 @@ The highest-order states $r_\psi, r_\theta, a$ are driven by a known determinist
 
 ## Results
 
-Monte Carlo analysis over 100 runs. The EKF is evaluated on the Gaussian scenario and the PF on the non-Gaussian scenario, as required by the exercise.
+Results are averaged over 100 Monte Carlo runs, obtained with a locally modified version of the course runner (not included in this repository).
 
 | | EKF | Particle Filter |
 |:---|:---:|:---:|
@@ -105,7 +105,7 @@ Bootstrap particle filter (Sequential Importance Resampling) with the following 
 
 1. **Fully vectorized NumPy operations**: all 70k particles are propagated in batch
 2. **Exact bimodal Gaussian mixture likelihood** for the sonar measurements (constants precomputed)
-3. **Likelihood tempering** ($\beta > 1$ via `BETA_usbl`, `BETA_sonar`): scales log-weights to adjust weight distribution peakiness
+3. **Likelihood tempering** ($\gamma > 1$, implemented as `BETA_usbl`, `BETA_sonar`): scales log-weights to adjust weight distribution peakiness
 4. **Adaptive systematic resampling**, triggered when $N_\text{eff}/N < 0.5$
 5. **Post-resampling roughening** with Silverman's kernel rule on $\psi$, $\theta$, $p$ only
 6. **Circular mean** for the heading: $\psi = \text{atan2}(\overline{\sin\psi},\; \overline{\cos\psi})$
@@ -115,34 +115,25 @@ Bootstrap particle filter (Sequential Importance Resampling) with the following 
 ## Project Structure
 
 ```
-├── estimator.py        # ★ Main implementation: EKF & Particle Filter (own work)
-├── run.py              # Extended runner: single / Monte Carlo / grid search (modified)
-├── run.sh              # Container launcher with RUN_MODE support (modified)
-├── plots/              # Simulation figures produced during execution (own work)
-├── const.py            # Problem constants & parameter ranges (course-provided)
-├── simulator.py        # Ground truth & measurement generator, obfuscated (course-provided)
-├── scoring.py          # RMSE computation + timing score (course-provided)
-├── plot_results.py     # Load & display saved results (course-provided)
-├── plotting.py         # 3D trajectory + state grid figures (course-provided)
-├── Dockerfile          # Grading environment: Python 3.10, 4 CPU, 2 GB RAM (course-provided)
-├── entrypoint.sh       # Docker entrypoint (course-provided)
-├── run.bat             # Windows launcher (course-provided)
-└── requirements.txt    # numpy==1.25.2, matplotlib==3.10.0 (course-provided)
-```
-
-## Usage
-
-```bash
-python run.py                # Single run
-RUN_MODE=mc python run.py    # Monte Carlo (100 runs)
+├── estimator.py        # Main implementation: EKF & Particle Filter
+├── plots/              # Simulation figures
+├── LICENSE
+└── README.md
 ```
 
 Only the Python standard library and NumPy are used by the estimator.
+
+## Usage
+
+This repository does not include the course framework. To run the estimators:
+
+1. Download the exercise package from the course website.
+2. Replace the provided `estimator.py` with the one from this repository.
+3. Run the exercise as described in the course instructions (`bash run.sh` on Linux/macOS, `run.bat` on Windows).
 
 ## Disclaimer & License
 
 This repository contains a personal academic solution to a graded course exercise, published for educational and portfolio purposes.
 
-- The course framework files remain the intellectual property of their authors (ETH Zürich, Institute for Dynamic Systems and Control).
-- The MIT License applies exclusively to my own contributions (`estimator.py`, extensions in `run.py`/`run.sh`, documentation, and plots).
-- If you are a student currently taking the course, please adhere to your institution's rules on academic integrity.
+- The course framework files are not part of this repository and remain the intellectual property of their authors (ETH Zürich, Institute for Dynamic Systems and Control).
+- The MIT License applies to the contents of this repository (`estimator.py`, documentation and plots).
